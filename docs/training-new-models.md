@@ -43,6 +43,10 @@ person-m
 
 
 ## 2. Preprocess the raw images
+If you plan to compute LFW accuracies, remove all LFW identities for your dataset.
+We provide an example script doing this with string matching in
+[remove-lfw-names.py](https://github.com/cmusatyalab/openface/blob/master/data/casia-facescrub/remove-lfw-names.py).
+
 Change `8` to however many
 separate processes you want to run:
 `for N in {1..8}; do ./util/align-dlib.py <path-to-raw-data> align outerEyesAndNose <path-to-aligned-data> --size 96 & done`.
@@ -50,10 +54,10 @@ separate processes you want to run:
 Prune out directories with less than 3 images per class with
 `./util/prune-dataset.py <path-to-aligned-data> --numImagesThreshold 3`.
 
-Split the dataset into `train` and `val` subdirectories
-with `./util/create-train-val-split.py <path-to-aligned-data> <validation-ratio>`.
-One option could be to have all of your data in `train` and
-then validate the model with the LFW experiment.
+<!-- Split the dataset into `train` and `val` subdirectories -->
+<!-- with `./util/create-train-val-split.py <path-to-aligned-data> <validation-ratio>`. -->
+<!-- One option could be to have all of your data in `train` and -->
+<!-- then validate the model with the LFW experiment. -->
 
 ## 3. Train the model
 Run [training/main.lua](https://github.com/cmusatyalab/openface/blob/master/training/main.lua) to start training the model.
@@ -67,7 +71,7 @@ These determine an upper-bound on the mini-batch size and
 should be reduced for less GPU memory consumption.
 
 Warning: Metadata about the on-disk data is cached in
-`training/work/{train,test}Cache.t7` and assumes
+`training/work/trainCache.t7` and assumes
 the data directory does not change.
 If your data directory changes, delete these
 files so they will be regenerated.

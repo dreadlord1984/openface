@@ -14,10 +14,9 @@ print(opt)
 
 if opt.cuda then
    require 'cutorch'
-   cutorch.setDevice(1)
+   cutorch.setDevice(opt.device)
 end
 
-os.execute('mkdir -p ' .. opt.save)
 torch.save(paths.concat(opt.save, 'opts.t7'), opt, 'ascii')
 print('Saving everything to: ' .. opt.save)
 
@@ -26,10 +25,11 @@ torch.setdefaulttensortype('torch.FloatTensor')
 torch.manualSeed(opt.manualSeed)
 
 paths.dofile('data.lua')
-paths.dofile('model.lua')
+paths.dofile('util.lua')
+model     = nil
+criterion = nil
 paths.dofile('train.lua')
 paths.dofile('test.lua')
-paths.dofile('util.lua')
 
 if opt.peoplePerBatch > nClasses then
   print('\n\nError: opt.peoplePerBatch > number of classes. Please decrease this value.')
@@ -42,7 +42,8 @@ epoch = opt.epochNumber
 
 for _=1,opt.nEpochs do
    train()
-   if opt.testEpochSize > 0 then
+   model = saveModel(model)
+   if opt.testing then
       test()
    end
    epoch = epoch + 1

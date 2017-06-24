@@ -1,4 +1,9 @@
-# Demo 3: Training a Classifier
+## Demo 3: Training a Classifier
+
+Released by [Brandon Amos](http://bamos.github.io) on 2015-10-13.
+
+---
+
 OpenFace's core provides a feature extraction method to
 obtain a low-dimensional representation of any face.
 [demos/classifier.py](https://github.com/cmusatyalab/openface/blob/master/demos/classifier.py)
@@ -42,6 +47,11 @@ person-m
 Change `8` to however many
 separate processes you want to run:
 `for N in {1..8}; do ./util/align-dlib.py <path-to-raw-data> align outerEyesAndNose <path-to-aligned-data> --size 96 & done`.
+
+If failed alignment attempts causes your directory to have too few images,
+you can use our utility script
+[./util/prune-dataset.py](https://github.com/cmusatyalab/openface/blob/master/util/prune-dataset.py)
+to deletes directories with less than a specified number of images.
 
 ### 3. Generate Representations
 `./batch-represent/main.lua -outDir <feature-directory> -data <path-to-aligned-data>`

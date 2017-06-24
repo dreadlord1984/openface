@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 #
 # Copyright 2015-2016 Carnegie Mellon University
 #
@@ -13,6 +13,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# This implements the standard LFW verification experiment.
 
 import math
 import numpy as np
@@ -37,20 +39,27 @@ from scipy import arange
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('tag', type=str, help='The label/tag to put on the ROC curve.')
+    parser.add_argument(
+        'tag', type=str, help='The label/tag to put on the ROC curve.')
     parser.add_argument('workDir', type=str,
                         help='The work directory with labels.csv and reps.csv.')
     pairsDefault = os.path.expanduser("~/openface/data/lfw/pairs.txt")
     parser.add_argument('--lfwPairs', type=str,
-                        default=os.path.expanduser("~/openface/data/lfw/pairs.txt"),
+                        default=os.path.expanduser(
+                            "~/openface/data/lfw/pairs.txt"),
 
                         help='Location of the LFW pairs file from http://vis-www.cs.umass.edu/lfw/pairs.txt')
     args = parser.parse_args()
 
     if not os.path.isfile(args.lfwPairs):
-        print("Error: LFW pairs (--lfwPairs) file not found.")
-        print("Download from http://vis-www.cs.umass.edu/lfw/pairs.txt.")
-        print("Default location:", pairsDefault)
+        print("""
+Error in LFW evaluation code. (Source: <openface>/evaluation/lfw.py)
+
+The LFW evaluation requires a file containing pairs of faces to evaluate.
+Download this file from http://vis-www.cs.umass.edu/lfw/pairs.txt
+and place it in the default location ({})
+or pass it as --lfwPairs.
+""".format(pairsDefault))
         sys.exit(-1)
 
     print("Loading embeddings.")
@@ -64,8 +73,8 @@ def main():
     embeddings = dict(zip(*[paths, rawEmbeddings]))
 
     pairs = loadPairs(args.lfwPairs)
-    classifyExp(args.workDir, pairs, embeddings)
-    plotClassifyExp(args.workDir, args.tag)
+    verifyExp(args.workDir, pairs, embeddings)
+    plotVerifyExp(args.workDir, args.tag)
 
 
 def loadPairs(pairsFname):
@@ -135,27 +144,35 @@ def writeROC(fname, thresholds, embeddings, pairsTest):
                 return
 
 
-def evalThresholdAccuracy(embeddings, pairs, threshold):
+def getDistances(embeddings, pairsTrain):
+    list_dist = []
     y_true = []
-    y_predict = []
-    for pair in pairs:
+    for pair in pairsTrain:
         (x1, x2, actual_same) = getEmbeddings(pair, embeddings)
         diff = x1 - x2
         dist = np.dot(diff.T, diff)
-        predict_same = dist < threshold
-        y_predict.append(predict_same)
+        list_dist.append(dist)
         y_true.append(actual_same)
+    return np.asarray(list_dist), np.array(y_true)
+
+
+def evalThresholdAccuracy(embeddings, pairs, threshold):
+    distances, y_true = getDistances(embeddings, pairs)
+    y_predict = np.zeros(y_true.shape)
+    y_predict[np.where(distances < threshold)] = 1
 
     y_true = np.array(y_true)
-    y_predict = np.array(y_predict)
     accuracy = accuracy_score(y_true, y_predict)
-    return accuracy
+    return accuracy, pairs[np.where(y_true != y_predict)]
 
 
 def findBestThreshold(thresholds, embeddings, pairsTrain):
     bestThresh = bestThreshAcc = 0
+    distances, y_true = getDistances(embeddings, pairsTrain)
     for threshold in thresholds:
-        accuracy = evalThresholdAccuracy(embeddings, pairsTrain, threshold)
+        y_predlabels = np.zeros(y_true.shape)
+        y_predlabels[np.where(distances < threshold)] = 1
+        accuracy = accuracy_score(y_true, y_predlabels)
         if accuracy >= bestThreshAcc:
             bestThreshAcc = accuracy
             bestThresh = threshold
@@ -165,7 +182,7 @@ def findBestThreshold(thresholds, embeddings, pairsTrain):
     return bestThresh
 
 
-def classifyExp(workDir, pairs, embeddings):
+def verifyExp(workDir, pairs, embeddings):
     print("  + Computing accuracy.")
     folds = KFold(n=6000, n_folds=10, shuffle=False)
     thresholds = arange(0, 4, 0.01)
@@ -182,7 +199,7 @@ def classifyExp(workDir, pairs, embeddings):
 
                 bestThresh = findBestThreshold(
                     thresholds, embeddings, pairs[train])
-                accuracy = evalThresholdAccuracy(
+                accuracy, pairs_bad = evalThresholdAccuracy(
                     embeddings, pairs[test], bestThresh)
                 accuracies.append(accuracy)
                 f.write('{}, {:0.2f}, {:0.2f}\n'.format(
@@ -234,7 +251,7 @@ def plotOpenFaceROC(workDir, plotFolds=True, color=None):
     return foldPlot, meanPlot, AUC
 
 
-def plotClassifyExp(workDir, tag):
+def plotVerifyExp(workDir, tag):
     print("Plotting.")
 
     fig, ax = plt.subplots(1, 1)
@@ -258,23 +275,23 @@ def plotClassifyExp(workDir, tag):
                        alpha=0.75)
     deepfaceAUC = getAUC(deepfaceData[1], deepfaceData[0])
 
-    baiduData = pd.read_table(
-        "comparisons/BaiduIDLFinal.TPFP", header=None, sep=' ')
-    bPlot, = plt.plot(baiduData[1], baiduData[0])
-    baiduAUC = getAUC(baiduData[1], baiduData[0])
+    # baiduData = pd.read_table(
+    #     "comparisons/BaiduIDLFinal.TPFP", header=None, sep=' ')
+    # bPlot, = plt.plot(baiduData[1], baiduData[0])
+    # baiduAUC = getAUC(baiduData[1], baiduData[0])
 
     eigData = pd.read_table(
         "comparisons/eigenfaces-original-roc.txt", header=None, sep=' ')
     eigPlot, = plt.plot(eigData[1], eigData[0])
     eigAUC = getAUC(eigData[1], eigData[0])
 
-    ax.legend([humanPlot, bPlot, dfPlot, brPlot, eigPlot,
+    ax.legend([humanPlot, dfPlot, brPlot, eigPlot,
                meanPlot, foldPlot],
               ['Human, Cropped [AUC={:.3f}]'.format(humanAUC),
-               'Baidu [{:.3f}]'.format(baiduAUC),
+               # 'Baidu [{:.3f}]'.format(baiduAUC),
                'DeepFace Ensemble [{:.3f}]'.format(deepfaceAUC),
                'OpenBR v1.1.0 [{:.3f}]'.format(brAUC),
-               'Eigenfaces (img-restrict) [{:.3f}]'.format(eigAUC),
+               'Eigenfaces [{:.3f}]'.format(eigAUC),
                'OpenFace {} [{:.3f}]'.format(tag, AUC),
                'OpenFace {} folds'.format(tag)],
               loc='lower right')

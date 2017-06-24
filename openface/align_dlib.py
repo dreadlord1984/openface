@@ -18,6 +18,7 @@ import cv2
 import dlib
 import numpy as np
 
+
 TEMPLATE = np.float32([
     (0.0792396913815, 0.339223741112), (0.0829219487236, 0.456955367943),
     (0.0967927109165, 0.575648016728), (0.122141515615, 0.691921601066),
@@ -72,10 +73,8 @@ class AlignDlib:
     .. image:: ../images/dlib-landmark-mean.png
     """
 
-    #: Landmark indices corresponding to the inner eyes and bottom lip.
+    #: Landmark indices.
     INNER_EYES_AND_BOTTOM_LIP = [39, 42, 57]
-
-    #: Landmark indices corresponding to the outer eyes and nose.
     OUTER_EYES_AND_NOSE = [36, 45, 33]
 
     def __init__(self, facePredictor):
@@ -108,19 +107,21 @@ class AlignDlib:
             # In rare cases, exceptions are thrown.
             return []
 
-    def getLargestFaceBoundingBox(self, rgbImg):
+    def getLargestFaceBoundingBox(self, rgbImg, skipMulti=False):
         """
         Find the largest face bounding box in an image.
 
         :param rgbImg: RGB image to process. Shape: (height, width, 3)
         :type rgbImg: numpy.ndarray
+        :param skipMulti: Skip image if more than one face detected.
+        :type skipMulti: bool
         :return: The largest face bounding box in an image, or None.
         :rtype: dlib.rectangle
         """
         assert rgbImg is not None
 
         faces = self.getAllFaceBoundingBoxes(rgbImg)
-        if len(faces) > 0:
+        if (not skipMulti and len(faces) > 0) or len(faces) == 1:
             return max(faces, key=lambda rect: rect.width() * rect.height())
         else:
             return None
@@ -143,7 +144,8 @@ class AlignDlib:
         return list(map(lambda p: (p.x, p.y), points.parts()))
 
     def align(self, imgDim, rgbImg, bb=None,
-              landmarks=None, landmarkIndices=INNER_EYES_AND_BOTTOM_LIP):
+              landmarks=None, landmarkIndices=INNER_EYES_AND_BOTTOM_LIP,
+              skipMulti=False):
         r"""align(imgDim, rgbImg, bb=None, landmarks=None, landmarkIndices=INNER_EYES_AND_BOTTOM_LIP)
 
         Transform and align a face in an image.
@@ -160,6 +162,8 @@ class AlignDlib:
         :type landmarks: list of (x,y) tuples
         :param landmarkIndices: The indices to transform to.
         :type landmarkIndices: list of ints
+        :param skipMulti: Skip image if more than one face detected.
+        :type skipMulti: bool
         :return: The aligned RGB image. Shape: (imgDim, imgDim, 3)
         :rtype: numpy.ndarray
         """
@@ -168,7 +172,7 @@ class AlignDlib:
         assert landmarkIndices is not None
 
         if bb is None:
-            bb = self.getLargestFaceBoundingBox(rgbImg)
+            bb = self.getLargestFaceBoundingBox(rgbImg, skipMulti)
             if bb is None:
                 return
 

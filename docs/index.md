@@ -9,6 +9,12 @@ deep neural networks.*
 
 ## News
 
++ 2016-09-15: We presented OpenFace in the
+  [Data (after)Lives](https://uag.pitt.edu/Detail/occurrences/370) art exhibit
+  at the University of Pittsburgh and have released the code as
+  [Demo 4: Real-time Face Embedding Visualization](demo-4-sphere/).
++ 2016-08-09: [New blog post: (Face) Image Completion with Deep Learning in TensorFlow](http://bamos.github.io/2016/08/09/deep-completion/). ([OpenFace group discussion on it](https://groups.google.com/forum/#!topic/cmu-openface/h7t-URw7zJA))
++ 2016-06-01: [OpenFace tech report released](http://reports-archive.adm.cs.cmu.edu/anon/2016/CMU-CS-16-118.pdf)
 + 2016-01-19: OpenFace 0.2.0 released!
   See [this blog post](http://bamos.github.io/2016/01/19/openface-0.2.0/)
   for more details.
@@ -22,9 +28,9 @@ the CVPR 2015 paper
 by Florian Schroff, Dmitry Kalenichenko, and James Philbin at Google.
 Torch allows the network to be executed on a CPU or with CUDA.
 
-**Crafted by [Brandon Amos](http://bamos.github.io) in
-[Satya's](https://www.cs.cmu.edu/~satya/) research group at
-Carnegie Mellon University.**
+**Crafted by [Brandon Amos](http://bamos.github.io),
+[Bartosz Ludwiczuk](https://github.com/melgor), and
+[Mahadev Satyanarayanan](https://www.cs.cmu.edu/~satya/).**
 
 ---
 
@@ -78,7 +84,7 @@ image of Sylvestor Stallone from the publicly available
 1. Detect faces with a pre-trained models from
   [dlib](http://blog.dlib.net/2014/02/dlib-186-released-make-your-own-object.html)
   or
-  [OpenCV](http://docs.opencv.org/master/d7/d8b/tutorial_py_face_detection.html).
+  [OpenCV](http://docs.opencv.org/master/tutorial_py_face_detection.html).
 2. Transform the face for the neural network.
    This repository uses dlib's
    [real-time pose estimation](http://blog.dlib.net/2014/08/real-time-face-pose-estimation.html)
@@ -103,28 +109,44 @@ image of Sylvestor Stallone from the publicly available
 
 ![](https://raw.githubusercontent.com/cmusatyalab/openface/master/images/summary.jpg)
 
+
+# Posts About OpenFace
+
++ [July 24, 2016] [Modern Face Recognition with Deep Learning](https://medium.com/@ageitgey/machine-learning-is-fun-part-4-modern-face-recognition-with-deep-learning-c3cffc121d78#.ds8i8oic9)
++ [Feb 24, 2016] [Hey Zuck, We Built Your Office A.I. Solution](http://blog.algorithmia.com/2016/02/hey-zuck-we-built-your-facial-recognition-ai/)
++ [Feb 3, 2016] [RTNiFiOpenFace and WebSocketServer add face recognition to an Apache NiFi video flow](https://richardstechnotes.wordpress.com/2016/02/03/rtnifiopenface-and-websocketserver-add-face-recognition-to-an-apache-nifi-video-flow/)
++ [Jan 29, 2016] [Integrating OpenFace into an Apache NiFi flow using WebSockets](https://richardstechnotes.wordpress.com/2016/01/29/integrating-openface-into-an-apache-nifi-flow-using-websockets/)
++ [Oct 15, 2015] (Spanish) GenBeta: [OpenFace, un nuevo software de reconocimiento facial, de código abierto](http://www.genbeta.com/actualidad/openface-un-nuevo-software-de-reconocimiento-facial-de-codigo-abierto)
++ [Oct 15, 2015] TheNextWeb: [Watch this open-source program recognize faces in real time](http://thenextweb.com/dd/2015/10/15/watch-this-open-source-program-recognize-faces-in-real-time/)
+
+# Notable Relevant Projects
++ [BrandonJoffe/home_surveillance](https://github.com/BrandonJoffe/home_surveillance):
+  Home surveillance dashboard that uses OpenFace for face recognition.
++ [davidsandberg/facenet](https://github.com/davidsandberg/facenet):
+  FaceNet TensorFlow implementation.
++ [pyannote/pyannote-video](https://github.com/pyannote/pyannote-video):
+  Face detection, tracking, and clustering in videos using OpenFace.
++ [aybassiouny/OpenFaceCpp](https://github.com/aybassiouny/OpenFaceCpp):
+  Unofficial OpenFace C++ implementation and bindings.
+
 # Citations
 
-The following is a [BibTeX](http://www.bibtex.org/)
-and plaintext reference
-for the OpenFace GitHub repository.
-The reference may change in the future.
-The BibTeX entry requires the `url` LaTeX package.
+Please cite OpenFace in your publications if it helps your research.
+The following is a [BibTeX](http://www.bibtex.org/) and plaintext reference for our
+[OpenFace tech report](http://reports-archive.adm.cs.cmu.edu/anon/anon/2016/CMU-CS-16-118.pdf).
 
 ```
-@misc{amos2016openface,
-    title        = {{OpenFace: Face Recognition with Deep Neural Networks}},
-    author       = {Amos, Brandon and Ludwiczuk, Bartosz and Harkes, Jan and
-                    Pillai, Padmanabhan and Elgazzar, Khalid and Satyanarayanan, Mahadev},
-    howpublished = {\url{http://github.com/cmusatyalab/openface}},
-    note         = {Accessed: 2016-01-11}
+@techreport{amos2016openface,
+  title={OpenFace: A general-purpose face recognition
+    library with mobile applications},
+  author={Amos, Brandon and Bartosz Ludwiczuk and Satyanarayanan, Mahadev},
+  year={2016},
+  institution={CMU-CS-16-118, CMU School of Computer Science},
 }
 
-Brandon Amos, Bartosz Ludwiczuk, Jan Harkes, Padmanabhan Pillai,
-Khalid Elgazzar, and Mahadev Satyanarayanan.
-OpenFace: Face Recognition with Deep Neural Networks.
-http://github.com/cmusatyalab/openface.
-Accessed: 2016-01-11
+B. Amos, B. Ludwiczuk, M. Satyanarayanan,
+"Openface: A general-purpose face recognition library with mobile applications,"
+CMU-CS-16-118, CMU School of Computer Science, Tech. Rep., 2016.
 ```
 
 # Acknowledgements
@@ -147,6 +169,11 @@ Accessed: 2016-01-11
   example code.
 + [Davis King's](https://github.com/davisking) [dlib](https://github.com/davisking/dlib)
   library for face detection and alignment.
++ The GitHub issue and pull request templates are inspired from
+  [Randy Olsen's](http://www.randalolson.com/) templates at [rhiever/tpot](https://github.com/rhiever/tpot),
+  [Justin Abrahms'](https://justin.abrah.ms/) [PR template](https://quickleft.com/blog/pull-request-templates-make-code-review-easier/),
+  and
+  [Aurelia Moser's](http://algorhyth.ms/) [issue template](https://bl.ocks.org/auremoser/72803ba969d0e61ff070).
 + Zhuo Chen, Kiryong Ha, Wenlu Hu,
   [Rahul Sukthankar](http://www.cs.cmu.edu/~rahuls/), and
   Junjue Wang for insightful discussions.

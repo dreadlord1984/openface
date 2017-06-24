@@ -17,6 +17,7 @@
 
 import os
 import shutil
+import sys
 
 import numpy as np
 np.set_printoptions(precision=2)
@@ -33,20 +34,30 @@ lfwSubset = os.path.join(openfaceDir, 'data', 'lfw-subset')
 
 
 def test_dnn_training():
-    # Get lfw-subset by running ./data/download-lfw-subset.sh
-    assert os.path.isdir(lfwSubset)
+    assert os.path.isdir(
+        lfwSubset), "Get lfw-subset by running ./data/download-lfw-subset.sh"
 
     imgWorkDir = tempfile.mkdtemp(prefix='OpenFaceTrainingTest-Img-')
-    cmd = ['python2', os.path.join(openfaceDir, 'util', 'align-dlib.py'),
+    cmd = [sys.executable, os.path.join(openfaceDir, 'util', 'align-dlib.py'),
            os.path.join(lfwSubset, 'raw'), 'align', 'outerEyesAndNose',
-           os.path.join(imgWorkDir, 'aligned', 'train')]
-    p = Popen(cmd, stdout=PIPE, stderr=PIPE)
+           os.path.join(imgWorkDir, 'aligned')]
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+    (out, err) = p.communicate()
+    print(out)
+    print(err)
+    assert p.returncode == 0
+
+    cmd = [sys.executable, os.path.join(openfaceDir, 'util', 'align-dlib.py'),
+           os.path.join(lfwSubset, 'raw'), 'align', 'outerEyesAndNose',
+           os.path.join(imgWorkDir, 'aligned')]
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
     (out, err) = p.communicate()
     print(out)
     print(err)
     assert p.returncode == 0
 
     netWorkDir = tempfile.mkdtemp(prefix='OpenFaceTrainingTest-Net-')
+    saveDir = os.path.join(netWorkDir, '1')
     cmd = ['th', './main.lua',
            '-data', os.path.join(imgWorkDir, 'aligned'),
            '-modelDef', '../models/openface/nn4.def.lua',
@@ -54,20 +65,20 @@ def test_dnn_training():
            '-imagesPerPerson', '10',
            '-nEpochs', '10',
            '-epochSize', '1',
-           '-testEpochSize', '0',
            '-cache', netWorkDir,
-           '-cuda', '-cudnn',
+           '-save', saveDir,
+           '-cuda', '-cudnn', '-testing',
            '-nDonkeys', '-1']
-    p = Popen(cmd, stdout=PIPE, stderr=PIPE, cwd=os.path.join(openfaceDir, 'training'))
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE,
+              cwd=os.path.join(openfaceDir, 'training'), universal_newlines=True)
     (out, err) = p.communicate()
     print(out)
     print(err)
     assert p.returncode == 0
 
     # Training won't make much progress on lfw-subset, but as a sanity check,
-    # make sure the training code runs and doesn't get worse than the initialize
-    # loss value of 0.2.
-    trainLoss = pd.read_csv(os.path.join(netWorkDir, '1', 'train.log'),
+    # make sure the training code runs and doesn't get worse than 0.2.
+    trainLoss = pd.read_csv(os.path.join(saveDir, 'train.log'),
                             sep='\t').as_matrix()[:, 0]
     assert np.mean(trainLoss) < 0.3
 

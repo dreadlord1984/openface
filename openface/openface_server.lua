@@ -23,6 +23,12 @@ require 'image'
 io.stdout:setvbuf 'no'
 torch.setdefaulttensortype('torch.FloatTensor')
 
+-- OpenMP-acceleration causes slower performance. Related issues:
+-- https://groups.google.com/forum/#!topic/cmu-openface/vqkkDlbfWZw
+-- https://github.com/torch/torch7/issues/691
+-- https://github.com/torch/image/issues/7
+torch.setnumthreads(1)
+
 local cmd = torch.CmdLine()
 cmd:text()
 cmd:text('Face recognition server.')
@@ -55,7 +61,7 @@ while true do
    -- as a CSV.
    local imgPath = io.read("*line")
    if imgPath and imgPath:len() ~= 0 then
-      img[1] = image.load(imgPath, 3, byte)
+      img[1] = image.load(imgPath, 3, 'float')
       img[1] = image.scale(img[1], opt.imgDim, opt.imgDim)
       local rep
       if opt.cuda then

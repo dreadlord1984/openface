@@ -1,17 +1,13 @@
-# OpenFace
+# OpenFace • [![Build Status][travis-image]][travis] [![Release][release-image]][releases] [![License][license-image]][license] [![Gitter][gitter-image]][gitter]
 
 *Free and open source face recognition with
 deep neural networks.*
 
-[ ![Build Status] [travis-image] ] [travis]
-[ ![Release] [release-image] ] [releases]
-[ ![License] [license-image] ] [license]
-[ ![Gitter] [gitter-image] ] [gitter]
 
-[travis-image]: https://travis-ci.org/cmusatyalab/openface.png?branch=master
+[travis-image]: https://travis-ci.org/cmusatyalab/openface.svg?branch=master
 [travis]: http://travis-ci.org/cmusatyalab/openface
 
-[release-image]: http://img.shields.io/badge/release-0.2.0-blue.svg?style=flat
+[release-image]: http://img.shields.io/badge/release-0.2.1-blue.svg?style=flat
 [releases]: https://github.com/cmusatyalab/openface/releases
 
 [license-image]: http://img.shields.io/badge/license-Apache--2-blue.svg?style=flat
@@ -49,6 +45,7 @@ and should not be attributed to their employers or funding sources.
 + [demos/vis-outputs.lua](https://github.com/cmusatyalab/openface/tree/master/demos/vis-outputs.lua): Demo to
   visualize the network's outputs.
 + [demos/classifier.py](https://github.com/cmusatyalab/openface/tree/master/demos/classifier.py): Demo to train and use classifiers.
++ [demos/classifier_webcam.py](https://github.com/cmusatyalab/openface/blob/master/demos/classifier_webcam.py): Demo to use a trained classifier on a webcam stream.
 + [evaluation](https://github.com/cmusatyalab/openface/blob/master/evaluation): LFW accuracy evaluation scripts.
 + [openface](https://github.com/cmusatyalab/openface/tree/master/openface): Python library code.
 + [models](https://github.com/cmusatyalab/openface/tree/master/models): Model directory for openface and 3rd party libraries.
@@ -58,26 +55,22 @@ and should not be attributed to their employers or funding sources.
 
 # Citations
 
-The following is a [BibTeX](http://www.bibtex.org/)
-and plaintext reference
-for the OpenFace GitHub repository.
-The reference may change in the future.
-The BibTeX entry requires the `url` LaTeX package.
+Please cite OpenFace in your publications if it helps your research.
+The following is a [BibTeX](http://www.bibtex.org/) and plaintext reference for our
+[OpenFace tech report](http://reports-archive.adm.cs.cmu.edu/anon/anon/2016/CMU-CS-16-118.pdf).
 
 ```
-@misc{amos2016openface,
-    title        = {{OpenFace: Face Recognition with Deep Neural Networks}},
-    author       = {Amos, Brandon and Ludwiczuk, Bartosz and Harkes, Jan and
-                    Pillai, Padmanabhan and Elgazzar, Khalid and Satyanarayanan, Mahadev},
-    howpublished = {\url{http://github.com/cmusatyalab/openface}},
-    note         = {Accessed: 2016-01-11}
+@techreport{amos2016openface,
+  title={OpenFace: A general-purpose face recognition
+    library with mobile applications},
+  author={Amos, Brandon and Bartosz Ludwiczuk and Satyanarayanan, Mahadev},
+  year={2016},
+  institution={CMU-CS-16-118, CMU School of Computer Science},
 }
 
-Brandon Amos, Bartosz Ludwiczuk, Jan Harkes, Padmanabhan Pillai,
-Khalid Elgazzar, and Mahadev Satyanarayanan.
-OpenFace: Face Recognition with Deep Neural Networks.
-http://github.com/cmusatyalab/openface.
-Accessed: 2016-01-11
+B. Amos, B. Ludwiczuk, M. Satyanarayanan,
+"Openface: A general-purpose face recognition library with mobile applications,"
+CMU-CS-16-118, CMU School of Computer Science, Tech. Rep., 2016.
 ```
 
 # Licensing

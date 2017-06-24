@@ -23,10 +23,11 @@ if [ ! -f dlib/shape_predictor_68_face_landmarks.dat ]; then
   printf "Downloading dlib's public domain face landmarks model.\n"
   printf "Reference: https://github.com/davisking/dlib-models\n\n"
   printf "This will incur about 60MB of network traffic for the compressed\n"
-  printf "models that will decpmoress to about 100MB on disk.\n"
+  printf "models that will decompress to about 100MB on disk.\n"
   printf "====================================================\n\n"
-  wget -nv http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2 \
-    -O dlib/shape_predictor_68_face_landmarks.dat.bz2
+  wget -nv \
+       http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2 \
+       -O dlib/shape_predictor_68_face_landmarks.dat.bz2
   [ $? -eq 0 ] || die "+ Error in wget."
   bunzip2 dlib/shape_predictor_68_face_landmarks.dat.bz2
   [ $? -eq 0 ] || die "+ Error using bunzip2."
@@ -41,12 +42,14 @@ if [ ! -f openface/nn4.small2.v1.t7 ]; then
   printf "This will incur about 100MB of network traffic for the models.\n"
   printf "====================================================\n\n"
 
-  wget -nv http://openface-models.storage.cmusatyalab.org/nn4.small2.v1.t7 \
-    -O openface/nn4.small2.v1.t7
+  wget -nv \
+       https://storage.cmusatyalab.org/openface-models/nn4.small2.v1.t7 \
+       -O openface/nn4.small2.v1.t7
   [ $? -eq 0 ] || ( rm openface/nn4.small2.v1.t7* && die "+ nn4.small2.v1.t7: Error in wget." )
 
-  wget -nv http://openface-models.storage.cmusatyalab.org/celeb-classifier.nn4.small2.v1.pkl \
-    -O openface/celeb-classifier.nn4.small2.v1.pkl
+  wget -nv \
+       https://storage.cmusatyalab.org/openface-models/celeb-classifier.nn4.small2.v1.pkl \
+       -O openface/celeb-classifier.nn4.small2.v1.pkl
   [ $? -eq 0 ] || ( rm openface/celeb-classifier.nn4.small2.v1.pkl && \
                     die "+ celeb-classifier.nn4.small2.v1.pkl: Error in wget." )
 fi
@@ -71,7 +74,7 @@ checkmd5() {
   local FNAME=$1
   local EXPECTED=$2
   local ACTUAL=$(md5str "$FNAME")
-  if [ $EXPECTED == $ACTUAL ]; then
+  if [ $EXPECTED = $ACTUAL ]; then
     printf "+ $FNAME: successfully checked\n"
   else
     printf "+ ERROR! $FNAME md5sum did not match.\n"

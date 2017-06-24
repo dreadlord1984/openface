@@ -1,5 +1,5 @@
 window.onload = function() {
-  var snowplowTracker = Snowplow.getTrackerUrl('derecho.elijah.cs.cmu.edu:8080');
+  var snowplowTracker = Snowplow.getTrackerUrl('joule.isr.cs.cmu.edu:8081');
   snowplowTracker.enableLinkTracking();
   snowplowTracker.trackPageView();
 }

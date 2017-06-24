@@ -1,4 +1,8 @@
-# Demo 1: Real-Time Web Demo
+## Demo 1: Real-Time Web Demo
+Released by [Brandon Amos](http://bamos.github.io) on 2015-10-13.
+
+---
+
 See [our YouTube video](https://www.youtube.com/watch?v=LZJOTRkjZA4)
 of using this in a real-time web application
 for face recognition.
@@ -25,6 +29,10 @@ confidence scores and then call the prediction unknown
 if the confidence is too low.
 See the [classification demo](http://cmusatyalab.github.io/openface/demo-3-classifier/)
 for an example of using a probabilistic classifier.
+
+See [cowbjt's unofficial fork](https://github.com/cowbjt/openface/tree/demo-web-stand-alone)
+for a version of the demo that saves trained faces in a SQLite
+database.
 
 ---
 
@@ -90,7 +98,7 @@ Start the HTTP and WebSocket servers on ports 8000 and 9000 in the
 Docker container with:
 
 ```
-docker run -t -p 8000:8000 -p 9000:9000 bamos/openface
+docker run -p 9000:9000 -p 8000:8000 -t -i bamos/openface /bin/bash -l -c '/root/openface/demos/web/start-servers.sh'
 ```
 
 Then find the IP address of the container and access the demo

@@ -18,6 +18,7 @@
 import os
 import shutil
 import tempfile
+import sys
 
 import numpy as np
 np.set_printoptions(precision=2)
@@ -35,15 +36,24 @@ lfwSubset = os.path.join(openfaceDir, 'data', 'lfw-subset')
 
 
 def test_batch_represent():
-    # Get lfw-subset by running ./data/download-lfw-subset.sh
-    assert os.path.isdir(lfwSubset)
+    assert os.path.isdir(
+        lfwSubset), "Get lfw-subset by running ./data/download-lfw-subset.sh"
 
     workDir = tempfile.mkdtemp(prefix='OpenFaceBatchRep-')
 
-    cmd = ['python2', os.path.join(openfaceDir, 'util', 'align-dlib.py'),
+    cmd = [sys.executable, os.path.join(openfaceDir, 'util', 'align-dlib.py'),
            os.path.join(lfwSubset, 'raw'), 'align', 'outerEyesAndNose',
            os.path.join(workDir, 'aligned')]
-    p = Popen(cmd, stdout=PIPE, stderr=PIPE)
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+    (out, err) = p.communicate()
+    print(out)
+    print(err)
+    assert p.returncode == 0
+
+    cmd = [sys.executable, os.path.join(openfaceDir, 'util', 'align-dlib.py'),
+           os.path.join(lfwSubset, 'raw'), 'align', 'outerEyesAndNose',
+           os.path.join(workDir, 'aligned')]
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
     (out, err) = p.communicate()
     print(out)
     print(err)
@@ -52,7 +62,7 @@ def test_batch_represent():
     cmd = ['th', './batch-represent/main.lua',
            '-data', os.path.join(workDir, 'aligned'),
            '-outDir', os.path.join(workDir, 'reps')]
-    p = Popen(cmd, stdout=PIPE, stderr=PIPE)
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
     (out, err) = p.communicate()
     print(out)
     print(err)

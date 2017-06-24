@@ -42,7 +42,7 @@ def write(vals, fName):
 
 
 def computeMeanMain(args):
-    align = openface.AlignDlib(args.dlibFaceMean, args.dlibFacePredictor)
+    align = openface.AlignDlib(args.dlibFacePredictor)
 
     imgs = list(iterImgs(args.inputDir))
     if args.numImages > 0:
@@ -84,29 +84,41 @@ def alignMain(args):
     # Shuffle so multiple versions can be run at once.
     random.shuffle(imgs)
 
-    if args.landmarks == 'outerEyesAndNose':
-        landmarkIndices = openface.AlignDlib.OUTER_EYES_AND_NOSE
-    elif args.landmarks == 'innerEyesAndBottomLip':
-        landmarkIndices = openface.AlignDlib.INNER_EYES_AND_BOTTOM_LIP
-    else:
+    landmarkMap = {
+        'outerEyesAndNose': openface.AlignDlib.OUTER_EYES_AND_NOSE,
+        'innerEyesAndBottomLip': openface.AlignDlib.INNER_EYES_AND_BOTTOM_LIP
+    }
+    if args.landmarks not in landmarkMap:
         raise Exception("Landmarks unrecognized: {}".format(args.landmarks))
+
+    landmarkIndices = landmarkMap[args.landmarks]
 
     align = openface.AlignDlib(args.dlibFacePredictor)
 
     nFallbacks = 0
     for imgObject in imgs:
+        print("=== {} ===".format(imgObject.path))
         outDir = os.path.join(args.outputDir, imgObject.cls)
         openface.helper.mkdirP(outDir)
         outputPrefix = os.path.join(outDir, imgObject.name)
         imgName = outputPrefix + ".png"
 
-        if not os.path.isfile(imgName):
+        if os.path.isfile(imgName):
+            if args.verbose:
+                print("  + Already found, skipping.")
+        else:
             rgb = imgObject.getRGB()
-            if rgb is not None:
-                outRgb = align.align(args.size, rgb,
-                                     landmarkIndices=landmarkIndices)
-            else:
+            if rgb is None:
+                if args.verbose:
+                    print("  + Unable to load.")
                 outRgb = None
+            else:
+                outRgb = align.align(args.size, rgb,
+                                     landmarkIndices=landmarkIndices,
+                                     skipMulti=args.skipMulti)
+                if outRgb is None and args.verbose:
+                    print("  + Unable to align.")
+
             if args.fallbackLfw and outRgb is None:
                 nFallbacks += 1
                 deepFunneled = "{}/{}.jpg".format(os.path.join(args.fallbackLfw,
@@ -117,6 +129,8 @@ def alignMain(args):
                                                              imgObject.name))
 
             if outRgb is not None:
+                if args.verbose:
+                    print("  + Writing aligned file to disk.")
                 outBgr = cv2.cvtColor(outRgb, cv2.COLOR_RGB2BGR)
                 cv2.imwrite(imgName, outBgr)
 
@@ -127,8 +141,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('inputDir', type=str, help="Input image directory.")
-    parser.add_argument('--dlibFaceMean', type=str, help="Path to dlib's face predictor.",
-                        default=os.path.join(dlibModelDir, "mean.csv"))
     parser.add_argument('--dlibFacePredictor', type=str, help="Path to dlib's face predictor.",
                         default=os.path.join(dlibModelDir, "shape_predictor_68_face_landmarks.dat"))
 
@@ -140,7 +152,9 @@ if __name__ == '__main__':
     alignmentParser = subparsers.add_parser(
         'align', help='Align a directory of images.')
     alignmentParser.add_argument('landmarks', type=str,
-                                 choices=['outerEyesAndNose', 'innerEyesAndBottomLip'],
+                                 choices=['outerEyesAndNose',
+                                          'innerEyesAndBottomLip',
+                                          'eyes_1'],
                                  help='The landmarks to align to.')
     alignmentParser.add_argument(
         'outputDir', type=str, help="Output directory of aligned images.")
@@ -148,6 +162,9 @@ if __name__ == '__main__':
                                  default=96)
     alignmentParser.add_argument('--fallbackLfw', type=str,
                                  help="If alignment doesn't work, fallback to copying the deep funneled version from this directory..")
+    alignmentParser.add_argument(
+        '--skipMulti', action='store_true', help="Skip images with more than one face.")
+    alignmentParser.add_argument('--verbose', action='store_true')
 
     args = parser.parse_args()
 

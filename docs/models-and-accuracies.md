@@ -4,7 +4,9 @@ and is intended for advanced users.
 
 # Model Definitions
 
-The number of parameters are with 128-dimensional embeddings.
+The number of parameters are with 128-dimensional embeddings
+and do not include the batch normalization running means and
+variances.
 
 | Model | Number of Parameters |
 |---|---|
@@ -27,10 +29,10 @@ and [CASIA-WebFace](http://arxiv.org/abs/1411.7923).
 
 The models can be downloaded from our storage servers:
 
-+ [nn4.v1](http://openface-models.storage.cmusatyalab.org/nn4.v1.t7)
-+ [nn4.v2](http://openface-models.storage.cmusatyalab.org/nn4.v2.t7)
-+ [nn4.small1.v1](http://openface-models.storage.cmusatyalab.org/nn4.small1.v1.t7)
-+ [nn4.small2.v1](http://openface-models.storage.cmusatyalab.org/nn4.small2.v1.t7)
++ [nn4.v1](https://storage.cmusatyalab.org/openface-models/nn4.v1.t7)
++ [nn4.v2](https://storage.cmusatyalab.org/openface-models/nn4.v2.t7)
++ [nn4.small1.v1](https://storage.cmusatyalab.org/openface-models/nn4.small1.v1.t7)
++ [nn4.small2.v1](https://storage.cmusatyalab.org/openface-models/nn4.small2.v1.t7)
 
 API differences between the models are:
 
@@ -44,16 +46,15 @@ API differences between the models are:
 ## Performance
 The performance is measured by averaging 500 forward passes with
 [util/profile-network.lua](https://github.com/cmusatyalab/openface/blob/master/util/profile-network.lua)
-and the following results are from an 8 core 3.70 GHz CPU
+and the following results use OpenBLAS on an 8 core 3.70 GHz CPU
 and a Tesla K40 GPU.
 
 | Model  | Runtime (CPU) | Runtime (GPU) |
 |---|---|---|
-| nn4.v1 | 679.75 ms &plusmn; 114.22 ms | 21.96 ms &plusmn; 6.71 ms |
-| nn4.v2 |687.27 ms &plusmn; 119.50 ms | 20.82 ms &plusmn; 6.03 ms |
-| nn4.small1.v1 | 528.33 ms &plusmn; 109.31 ms | 15.90 ms &plusmn; 5.18 ms |
-| nn4.small2.v1 | 460.89 ms &plusmn; 85.74 ms | 13.72 ms &plusmn; 4.64 ms |
-
+| nn4.v1 | 75.67 ms &plusmn; 19.97 ms | 21.96 ms &plusmn; 6.71 ms |
+| nn4.v2 | 82.74 ms &plusmn; 19.96 ms | 20.82 ms &plusmn; 6.03 ms |
+| nn4.small1.v1 | 69.58 ms &plusmn; 16.17 ms | 15.90 ms &plusmn; 5.18 ms |
+| nn4.small2.v1 | 58.9 ms &plusmn; 15.36 ms | 13.72 ms &plusmn; 4.64 ms |
 
 ## Accuracy on the LFW Benchmark
 
@@ -95,7 +96,7 @@ directory, assuming you have downloaded and placed the raw and
 [deep funneled](http://vis-www.cs.umass.edu/deep_funnel.html)
 LFW data from [here](http://vis-www.cs.umass.edu/lfw/)
 in `./data/lfw/raw` and `./data/lfw/deepfunneled`.
-Also asve [pairs.txt](http://vis-www.cs.umass.edu/lfw/pairs.txt) in
+Also save [pairs.txt](http://vis-www.cs.umass.edu/lfw/pairs.txt) in
 `./data/lfw/pairs.txt`.
 
 1. Install prerequisites as below.

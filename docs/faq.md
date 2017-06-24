@@ -1,5 +1,14 @@
 # FAQ
 
+## Does the trained deep network model work well on people it wasn't trained with?
+
+Yes.
+
+## How can I detect unknown people?
+
+This is a work-in-progress, join in on the discussion in our issue
+[#144](https://github.com/cmusatyalab/openface/issues/144).
+
 ## How much time does OpenFace take to process an image?
 
 The execution time depends on the size of the input images.
@@ -17,8 +26,8 @@ The alignment cost is negligible.
 These times are obtained from averaging 100 trials with
 our [util/profile-pipeline.py](https://github.com/cmusatyalab/openface/blob/master/util/profile-pipeline.py)
 script.
-The standard deviations are low,
-see [the raw data](/data/2016-01-19/execution-times.txt).
+<!-- The standard deviations are low, -->
+<!-- see [the raw data](/data/2016-01-19/execution-times.txt). -->
 
 <img src='https://raw.githubusercontent.com/cmusatyalab/openface/master/images/performance.png' />
 
@@ -32,6 +41,10 @@ see [the raw data](/data/2016-01-19/execution-times.txt).
   Use the `-DUSE_AVX_INSTRUCTIONS=ON` in the first `cmake` command.
   If your architecture does not support AVX, try SSE4 or SSE2.
 
+3. Make sure Torch is linking with [OpenBLAS](http://www.openblas.net/),
+   instead of netlib for BLAS and LAPACK.
+   From our experiments, a single neural network forward pass that
+   executes in 460ms with netlib executes in 59ms with OpenBLAS.
 
 ## I'm getting an illegal instruction error in the pre-built Docker container.
 
@@ -51,3 +64,9 @@ change the `FROM` part of the
 [OpenFace Dockerfile](https://github.com/cmusatyalab/openface/blob/master/Dockerfile)
 to your version,
 then build the OpenFace Dockerfile.
+
+## I want to load an OpenFace model in ARM.
+
+Use our ASCII model from [this issue](https://github.com/cmusatyalab/openface/issues/42).
+You can load the ASCII model and save a new ARM binary model
+for faster loading times.
